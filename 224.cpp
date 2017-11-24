@@ -57,7 +57,6 @@ void BFS(int idx,int pre)
 
 int main()
 {
-    srand(time(NULL));
     int n;
     cin>>n;
     for(int i=1; i<=n; i++)
