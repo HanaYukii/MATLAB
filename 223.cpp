@@ -1,18 +1,7 @@
 #include<bits/stdc++.h>
 using namespace std;
 int inc[100001];
-int input()
-{
-    int n = 0;
-    char c;
-    while ((c = getchar()) != ' '&&c != '\n')
-    {
-        if (c == EOF)
-            return -1;
-        n = n * 10 + c - '0';
-    }
-    return n;
-}
+
 int LIS(vector<int> &v)
 {
     vector <int> ve;
@@ -31,8 +20,7 @@ int LIS(vector<int> &v)
 int main()
 {
     int m,n;
-    m=input();
-    n=input();
+    scanf("%d %d",&m,&n);
     int cont[m+1]={0};
     int cont2[m+1]={0};
     for(int i=0; i<m; i++)
