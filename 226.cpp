@@ -19,7 +19,7 @@ int sol(int num)
         {
             int temp;
             if(0==(K&~num))continue;
-            temp=w[i][i][i]+w[j][j][j]+w[k][k][k]+w[i][j][k]+w[i][j][3*n]+w[i][k][3*n]+w[j][k][3*n]+sol(num|I|J|K);
+            temp=dp[(I|J|K)^(N-1)]+sol(num|I|J|K);
             if(temp>ans)
             {
                 ans=temp;
@@ -57,7 +57,17 @@ void solve()
             int n3[2];
             scanf("%d %d %d",&n3[0],&n3[1],&cp);
             sort(n3,n3+2);
-            w[n3[0]][n3[1]][n*3]+=cp;
+            w[n3[0]][n3[1]][0]+=cp;
+        }
+    }
+    for(int i=0,I=1; I<N ; i++,I<<=1)
+    {
+        for(int j=i+1,J=(I<<1); J<N; J<<=1,j++)
+        {
+            for(int k=j+1,K=(J<<1); K<N; K<<=1,k++)
+            {
+                dp[(I|J|K)^(N-1)]=w[i][i][i]+w[j][j][j]+w[k][k][k]+w[i][j][k]+w[i][j][0]+w[i][k][0]+w[j][k][0];
+            }
         }
     }
     printf("%d\n",sol(0));
