@@ -5,20 +5,7 @@ long long goal[1000005];
 long long dp[1000005];
 vector<int> g[1000005];
 int cnt;
-long long read()
-{
-    char cha;
-    long long x=0;
-    while(cha=getchar())
-        if(cha!=' '&&cha!='\n') break;
-    x=x*10+cha-48;
-    while(cha=getchar())
-    {
-        if(cha==' '||cha=='\n') break;
-        x=x*10+cha-48;
-    }
-    return x;
-}
+
 void BFS(int idx,int pre)
 {
     if(g[idx].size()==1)
@@ -61,11 +48,11 @@ int main()
     cin>>n;
     for(int i=1; i<=n; i++)
     {
-        now[i]=read();
+        scanf("%d",&now[i]);
     }
     for(int i=1; i<=n; i++)
     {
-        goal[i]=read();
+        scanf("%d",&goal[i]);
     }
     for(int i=1; i<n; i++)
     {
