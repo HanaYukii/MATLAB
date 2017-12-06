@@ -1,4 +1,4 @@
-%ID: 0516020 姓名：呂爾軒
+%ID: 0516316 姓名：呂爾軒
 function P3_0516316(path)
     pathjpg=strcat(path,'*.jpg');
     pictures=dir(pathjpg);
