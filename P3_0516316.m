@@ -18,7 +18,7 @@ function P3_0516316(path)
             new_image = padarray(image, [put_row put_col], 0);
             [row, col, h] = size(new_image);
             h;
-            nornal = imresize(new_image, [640 480], 'nearest');
+            normal = imresize(new_image, [640 480], 'nearest');
         end
         imshow(normal);
         [row,col,h]=size(normal);
@@ -69,8 +69,8 @@ function P3_0516316(path)
                 figure(1);
                 imshow(normal);
                 top=min(y+radius,480);
-                bot=max(0,y-radius);
-                left=max(0,x-radius);
+                bot=max(1,y-radius);
+                left=max(1,x-radius);
                 right=min(640,x+radius);
                 line([left right], [top top], 'color', 'k', 'LineWidth', 3);
                 line([left right], [bot bot], 'color', 'k', 'LineWidth', 3);
@@ -147,10 +147,14 @@ function P3_0516316(path)
                         end
                         figure(1);
                         imshow(normal);
-                        line([x-radius x+radius], [y-radius y-radius], 'color', 'k', 'LineWidth', 3);
-                        line([x-radius x+radius], [y+radius y+radius], 'color', 'k', 'LineWidth', 3);
-                        line([x-radius x-radius], [y-radius y+radius], 'color', 'k', 'LineWidth', 3);
-                        line([x+radius x+radius], [y-radius y+radius], 'color', 'k', 'LineWidth', 3);
+                        top=min(y+radius,480);
+                        bot=max(1,y-radius);
+                        left=max(1,x-radius);
+                        right=min(640,x+radius);
+                        line([left right], [top top], 'color', 'k', 'LineWidth', 3);
+                        line([left right], [bot bot], 'color', 'k', 'LineWidth', 3);
+                        line([left left], [bot top], 'color', 'k', 'LineWidth', 3);
+                        line([right right], [bot top], 'color', 'k', 'LineWidth', 3);
                         figure(2);
                         am = ((2*radius)*(2*radius)) / (row*col) * 100;
                         imshow(image);
@@ -175,8 +179,3 @@ function P3_0516316(path)
         end
     end %while end for tt1
 end
-            
-            
-            
-            
-            
