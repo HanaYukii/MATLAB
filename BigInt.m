@@ -3,60 +3,153 @@ classdef BigInt
         digits='0';
     end
     methods
-        function obj=BigInt(num)
-            if nargin==0
-                obj.digits='0';
-            elseif nargin==1 &&ischar(num)
-                obj.digits=num;
-            elseif nargin==1 &&isscalar(num)
-                obj.digits=num2str(num);
-            else 
+        function obj = BigInt(num)
+            if nargin == 0
+                obj.digits = '0' ;
+            elseif nargin == 1 && ischar(num)
+                obj.digits = num ;
+                
+            elseif nargin == 1 && isscalar(num) && ~iscell(num)
+                obj.digits = num2str(num) ;
+                
+            elseif nargin == 1 && iscell(num)
+                for ii = 1 : numel(num)
+                    obj(ii)= BigInt(num{ii}) ;
+                end
+                obj = reshape(obj, size(num));
+                
+            elseif nargin == 1 && ismatrix(num)
+                obj(1:numel(num)) = BigInt() ;
+                for ii = 1 : numel(num)
+                    obj(ii)= BigInt(num(ii)) ;
+                end
+                obj = reshape(obj, size(num));
+                
+            else
                 error('Input error') ;
             end
         end
-        function obj=plus(str1,str2)
-            n = max( length(str1.digits), length(str2.digits) ) + 1 ;
-            num1 = [zeros(1,n-length(str1.digits)) str1.digits-'0'] ;
-            num2 = [zeros(1,n-length(str2.digits)) str2.digits-'0'] ;
-            num1 = num1 + num2 ;
-            k = find(num1 >= 10) ;
-            while ~isempty(k)
-                  num1(k) = num1(k) - 10 ;
-                  num1(k-1) = num1(k-1) + 1 ;
-                  k = find(num1 >= 10) ;
+        function obj = plus(str1, str2)
+            if ~isa(str1, 'BigInt')
+                str1 = BigInt(str1) ;
+            elseif ~isa(str2, 'BigInt')
+                str2 = BigInt(str2) ;
             end
-            num1 = num1(find(num1>0 , 1, 'first') : end) ;
-            num1 = char(num1 +'0') ;
-            obj = BigInt(num1) ;
+            
+            if size(str1) == size(str2)
+                for ii = 1 : numel(str1)
+                    n = max( length(str1(ii).digits), length(str2(ii).digits) ) + 1 ;
+                    num1 = [zeros(1,n-length(str1(ii).digits)) str1(ii).digits-'0'] ;
+                    num2 = [zeros(1,n-length(str2(ii).digits)) str2(ii).digits-'0'] ;
+                    num1 = num1 + num2 ;
+                    k = find(num1 >= 10) ;
+                    while ~isempty(k)
+                        num1(k) = num1(k) - 10 ;
+                        num1(k-1) = num1(k-1) + 1 ;
+                        k = find(num1 >= 10) ;
+                    end
+                    num1 = num1(find(num1>0 , 1, 'first') : end) ;
+                    num1 = char(num1 +'0') ;
+                    obj(ii) = BigInt(num1) ;
+                end
+                obj = reshape(obj, size(str1));
+                
+            elseif size(str1) == [1, 1]
+                for ii = 1 : numel(str2)
+                    n = max( length(str1.digits), length(str2(ii).digits) ) + 1 ;
+                    num1 = [zeros(1,n-length(str1.digits)) str1.digits-'0'] ;
+                    num2 = [zeros(1,n-length(str2(ii).digits)) str2(ii).digits-'0'] ;
+                    num1 = num1 + num2 ;
+                    k = find(num1 >= 10) ;
+                    while ~isempty(k)
+                        num1(k) = num1(k) - 10 ;
+                        num1(k-1) = num1(k-1) + 1 ;
+                        k = find(num1 >= 10) ;
+                    end
+                    num1 = num1(find(num1>0 , 1, 'first') : end) ;
+                    num1 = char(num1 +'0') ;
+                    obj(ii) = BigInt(num1) ;
+                end
+                obj = reshape(obj, size(str2));
+                
+                elseif size(str2) == [1, 1]
+                for ii = 1 : numel(str1)
+                    n = max( length(str1(ii).digits), length(str2.digits) ) + 1 ;
+                    num1 = [zeros(1,n-length(str1(ii).digits)) str1(ii).digits-'0'] ;
+                    num2 = [zeros(1,n-length(str2.digits)) str2.digits-'0'] ;
+                    num1 = num1 + num2 ;
+                    k = find(num1 >= 10) ;
+                    while ~isempty(k)
+                        num1(k) = num1(k) - 10 ;
+                        num1(k-1) = num1(k-1) + 1 ;
+                        k = find(num1 >= 10) ;
+                    end
+                    num1 = num1(find(num1>0 , 1, 'first') : end) ;
+                    num1 = char(num1 +'0') ;
+                    obj(ii) = BigInt(num1) ;
+                end
+                obj = reshape(obj, size(str1));
+            end
         end
         function obj = times(str1, str2)
-             if class(str1)=='double'
-                str1=BigInt(str1);
-             end
-                str1.digits = str1.digits - '0' ;
-                str2.digits = str2.digits - '0' ;
-                num1 = conv(str1.digits, str2.digits) ;
-                num2 = 0 ;
-                    for jj = 0 : length(num1)-1
-                        num2 = num2 + num1(end - jj) * 10^(jj) ; 
+            if ~isa(str2, 'BigInt')
+                str2 = BigInt(str2);
+            end
+            if size(str1) == size(str2)
+                for ii = 1 : numel(str1)
+                str1(ii).digits = str1(ii).digits - '0' ;
+                str2(ii).digits = str2(ii).digits - '0' ;
+                num1 = conv(str1(ii).digits, str2(ii).digits) ;
+                num1=[0 num1]; 
+                k = find(num1 >= 10) ;
+                while ~isempty(k)
+                        num1(k) = num1(k) - 10 ;
+                        num1(k-1) = num1(k-1) + 1 ;
+                        k = find(num1 >= 10) ;
                     end
-                obj = BigInt( num2 ) ;
+                    num1 = num1(find(num1>0 , 1, 'first') : end) ;
+                    num1 = char(num1 +'0') ;
+                obj(ii) = BigInt(num1) ;
+                end
+               obj = reshape(obj, size(str1)) ;
+            else
+                error ('Matrix size does not equal.') ;
+            end
         end
         function obj = eq(str1, str2)
-            if str2num(str1.digits)==str2num(str2.digits)
-                obj=BigInt(1);
-            else
-                obj=BigInt();
+            if numel(str2)==1
+                str2=repmat(str2,size(str1,1),size(str1,2));
             end
+            if ~isa(str1, 'BigInt')
+                str1 = BigInt(str1) ;
+            elseif ~isa(str2, 'BigInt')
+                str2 = BigInt(str2) ;
+            end
+            ans=zeros(size(str1));  
+                for ii = 1 : size(str1, 1)
+                    for jj = 1 : size(str1, 2)
+                       if strcmp(str1(ii, jj).digits, str2(ii, jj).digits)
+                           ans(ii,jj)=1;
+                       end
+                    end
+                end
+            obj=ans;
         end
         function obj= make_str(str)
             obj=BigInt(str);
         end
         function disp(num)
-            if class(num)~='BigInt'
-                num=make_str(num);
+
+            if size(num, 1) == 1 &&...
+               size(num, 2) == 1
+               fprintf('%s\n',num.digits) ;
+            elseif ismatrix(num) 
+                 for ii = 1 : size(num, 1)
+                    for jj = 1 : size(num, 2)
+                        fprintf('(%d,%d)    %s\n', ii, jj, num(ii,jj).digits);
+                    end
+                end
             end
-            fprintf('%s\n',num.digits) ;
         end
     end
 end
