@@ -18,15 +18,12 @@ classdef BigInt
                 end
                 obj = reshape(obj, size(num));
                 
-            elseif nargin == 1 && ismatrix(num)
+            else
                 obj(1:numel(num)) = BigInt() ;
                 for ii = 1 : numel(num)
                     obj(ii)= BigInt(num(ii)) ;
                 end
                 obj = reshape(obj, size(num));
-                
-            else
-                error('Input error') ;
             end
         end
         function obj = plus(str1, str2)
@@ -126,29 +123,30 @@ classdef BigInt
                 str2 = BigInt(str2) ;
             end
             ans=zeros(size(str1));  
-                for ii = 1 : size(str1, 1)
-                    for jj = 1 : size(str1, 2)
-                       if strcmp(str1(ii, jj).digits, str2(ii, jj).digits)
-                           ans(ii,jj)=1;
+                for ii = 1 : numel(str1)
+                       if strcmp(str1(ii).digits, str2(ii).digits)
+                           ans(ii)=1;
                        end
-                    end
                 end
-            obj=ans;
+            obj = reshape(ans, size(str2));
         end
         function obj= make_str(str)
             obj=BigInt(str);
         end
-        function disp(num)
-
-            if size(num, 1) == 1 &&...
-               size(num, 2) == 1
-               fprintf('%s\n',num.digits) ;
-            elseif ismatrix(num) 
-                 for ii = 1 : size(num, 1)
-                    for jj = 1 : size(num, 2)
-                        fprintf('(%d,%d)    %s\n', ii, jj, num(ii,jj).digits);
-                    end
-                end
+        function disp(num) 
+            N=ndims(num);
+            P=cell(1,N);
+                 for ii = 1 : numel(num)
+                        fprintf('(');
+                        [P{:}]=ind2sub(size(num),ii);
+                        for jj=1:N
+                             fprintf('%d',P{jj});
+                             if jj~=N
+                                fprintf(',',P{jj});
+                             end
+                        end
+                        fprintf(')    ');
+                        fprintf('%s\n',num(ii).digits);
             end
         end
     end
