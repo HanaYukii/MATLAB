@@ -12,14 +12,14 @@ def sigmoid(z):
     return 1 / (1 + np.exp(-z))
     
 def forward_propagate(X, theta1, theta2):
-    m = X.shape[0]
-    b=np.ones((m,1))
+    
+    b=np.ones((X.shape[0],1))
     act=lambda i:sigmoid(i)
     v=np.vectorize(act)
     a1 =np.concatenate((b, X), axis=1)
-    z2 =np.dot(a1, theta1.transpose())
+    z2 =np.dot(a1, theta1.T)
     a2 =np.concatenate((b, v(z2)), axis=1)
-    z3 =np.dot(a2,theta2.transpose())
+    z3 =np.dot(a2,theta2.T)
     h = v(z3)
     return a1, z2, a2, z3, h
     
@@ -63,36 +63,34 @@ def sigmoid_gradient(z):
     return np.multiply(sigmoid(z), (1 - sigmoid(z)))    
 
 def backprop(params, input_size, hidden_size, num_labels, X, y, learning_rate):
-    m = X.shape[0]
     t1=np.matrix(np.reshape(params[:hidden_size * (input_size + 1)], (hidden_size, (input_size + 1))))
     t2=np.matrix(np.reshape(params[hidden_size * (input_size + 1):], (num_labels, (hidden_size + 1))))
-    nt1= np.delete(t1, 0, axis = 1)
-    nt2= np.delete(t2, 0, axis = 1)
-    act= lambda i : sigmoid(i)
-    v= np.vectorize(act)
-    learn=lambda i : ((i*learning_rate) / m)
-    vlearn= np.vectorize(learn)
-    agrad = lambda i : sigmoid_gradient(i)
-    vgrad= np.vectorize(agrad)
+    nt1=np.delete(t1, 0, axis = 1)
+    nt2=np.delete(t2, 0, axis = 1)
+    act=lambda i : sigmoid(i)
+    v=np.vectorize(act)
+    sz=X.shape[0]
+    learn=lambda i : ((i*learning_rate) / sz)
+    vlearn=np.vectorize(learn)
+    agrad=lambda i : sigmoid_gradient(i)
+    vgrad=np.vectorize(agrad)
     d1=np.zeros(t1.shape)
     d2=np.zeros(t2.shape)
-    for i in range(0, m):
-        b= np.ones((1,1)) 
-        a1 = np.concatenate((b, X[i].transpose()), axis = 0)
-        z2 = np.dot(t1, a1)
-        a2 = np.concatenate((b, v(z2)), axis=0)
-        z3 = np.dot(t2, a2)
-        h = v(z3)
-        d3 = np.subtract(h, y[i].reshape(10, 1))
-        d4 = np.multiply(np.dot(nt2.transpose(), d3), vgrad(z2))
-        d1 += np.dot(d4, a1.transpose())
-        d2 += np.dot(d3, a2.transpose())
-        
-
-    t1grad = vlearn(d1)
-    t2grad = vlearn(d2)
-    grad = np.concatenate((t1grad.flatten(), t2grad.flatten()), axis = 0)
-    J = cost(params, input_size, hidden_size, num_labels, X, y, learning_rate)
+    for i in range(0, sz):
+        b=np.ones((1,1)) 
+        a1=np.concatenate((b, X[i].T))
+        z2=np.dot(t1, a1)
+        a2=np.concatenate((b, v(z2)))
+        z3=np.dot(t2, a2)
+        h=v(z3)
+        d3=np.subtract(h, y[i].reshape(10, 1))
+        d4=np.multiply(np.dot(nt2.T, d3), vgrad(z2))
+        d1+=np.dot(d4, a1.T)
+        d2+=np.dot(d3, a2.T)
+    t1grad=vlearn(d1)
+    t2grad=vlearn(d2)
+    grad=np.concatenate((t1grad.flatten(), t2grad.flatten()))
+    J=cost(params, input_size, hidden_size, num_labels, X, y, learning_rate)
     return J, grad
     
 from scipy.optimize import minimize
